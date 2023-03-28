@@ -7,20 +7,24 @@ import _ from 'lodash'
 import { generateSignature } from '@/utils/auth'
 
 export default () => {
-  let inputRef: HTMLTextAreaElement
-  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] = createSignal('')
-  const [systemRoleEditing, setSystemRoleEditing] = createSignal(false)
-  const [messageList, setMessageList] = createSignal<ChatMessage[]>([])
-  const [currentAssistantMessage, setCurrentAssistantMessage] = createSignal('')
-  const [loading, setLoading] = createSignal(false)
-  const [controller, setController] = createSignal<AbortController>(null)
-
+  let inputRef: HTMLTextAreaElement;
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
   const currentDay = currentDate.getDate();
-  const DATA_STR = `${currentYear}${currentMonth}${currentDay}`;
+  const DATA_STR = `${currentYear}-${currentMonth}-${currentDay}`;
+
   const [count, setCount] = createSignal(Number(localStorage[DATA_STR] || 0));
+
+  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] =
+    createSignal("");
+  const [systemRoleEditing, setSystemRoleEditing] = createSignal(false);
+  const [messageList, setMessageList] = createSignal<ChatMessage[]>([]);
+  const [currentAssistantMessage, setCurrentAssistantMessage] =
+    createSignal("");
+  const [loading, setLoading] = createSignal(false);
+  const [controller, setController] = createSignal<AbortController>(null);
+
   const handleButtonClick = async () => {
     const inputValue = inputRef.value
     if (!inputValue) {
@@ -45,11 +49,11 @@ export default () => {
     trailing: false
   })
   const requestWithLatestMessage = async () => {
+    setLoading(true)
+    setCurrentAssistantMessage('')
     if (count() > 9 || messageList().length > 7){
       return
     }
-    setLoading(true)
-    setCurrentAssistantMessage('')
     try {
       const controller = new AbortController()
       setController(controller)
@@ -76,8 +80,6 @@ export default () => {
       if (!response.ok) {
         throw new Error(response.statusText)
       }
-      setCount(count() + 1);
-      localStorage[DATA_STR] = count();
       const data = response.body
       if (!data) {
         throw new Error('No data')
