@@ -310,5 +310,5 @@ export default () => {
         </div>
       </Show>
     </div>
-  );
-};
+  )
+}
