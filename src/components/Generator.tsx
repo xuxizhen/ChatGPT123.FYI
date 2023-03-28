@@ -7,23 +7,13 @@ import _ from 'lodash'
 import { generateSignature } from '@/utils/auth'
 
 export default () => {
-  let inputRef: HTMLTextAreaElement;
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-  const currentDay = currentDate.getDate();
-  const DATA_STR = `${currentYear}-${currentMonth}-${currentDay}`;
-
-  const [count, setCount] = createSignal(Number(localStorage[DATA_STR] || 0));
-
-  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] =
-    createSignal("");
-  const [systemRoleEditing, setSystemRoleEditing] = createSignal(false);
-  const [messageList, setMessageList] = createSignal<ChatMessage[]>([]);
-  const [currentAssistantMessage, setCurrentAssistantMessage] =
-    createSignal("");
-  const [loading, setLoading] = createSignal(false);
-  const [controller, setController] = createSignal<AbortController>(null);
+  let inputRef: HTMLTextAreaElement
+  const [currentSystemRoleSettings, setCurrentSystemRoleSettings] = createSignal('')
+  const [systemRoleEditing, setSystemRoleEditing] = createSignal(false)
+  const [messageList, setMessageList] = createSignal<ChatMessage[]>([])
+  const [currentAssistantMessage, setCurrentAssistantMessage] = createSignal('')
+  const [loading, setLoading] = createSignal(false)
+  const [controller, setController] = createSignal<AbortController>(null)
 
   const handleButtonClick = async () => {
     const inputValue = inputRef.value
@@ -51,9 +41,6 @@ export default () => {
   const requestWithLatestMessage = async () => {
     setLoading(true)
     setCurrentAssistantMessage('')
-    if (count() > 9 || messageList().length > 7){
-      return
-    }
     try {
       const controller = new AbortController()
       setController(controller)
@@ -186,41 +173,6 @@ export default () => {
           role="assistant"
           message={currentAssistantMessage}
         />
-      )}
-      {count() > 9 && (
-        <div class="py-2 -mx-4 px-4 transition-colors md:hover:bg-slate/3">
-          <div class="flex gap-3 rounded-lg">
-            <div class="shrink-0 w-7 h-7 mt-4 rounded-full op-80 ">
-              <img src="/favicon.svg" />
-            </div>
-            <div class="message prose break-words overflow-hidden">
-              <p>Error:</p>
-              <p>
-                Due to cost reasons, we have some limitations for free users.
-              </p>
-              <p>You have reached your daily limits.</p>
-              <p>因成本原因我们对免费用户做了消息限制，你的今日额度已用完。</p>
-            </div>
-          </div>
-        </div>
-      )}
-      {messageList().length > 7 && (
-        <div class="py-2 -mx-4 px-4 transition-colors md:hover:bg-slate/3">
-          <div class="flex gap-3 rounded-lg">
-            <div class="shrink-0 w-7 h-7 mt-4 rounded-full op-80 ">
-              <img src="/favicon.svg" />
-            </div>
-            <div class="message prose break-words overflow-hidden">
-              <pre>
-                <code class="hljs">
-                  Too many context messages, please clear the messages and try
-                  again. <br />
-                  上下文消息过多，请清除消息后重试。
-                </code>
-              </pre>
-            </div>
-          </div>
-        </div>
       )}
       <Show
         when={!loading()}
